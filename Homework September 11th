@@ -1,0 +1,340 @@
+%Question 1 - Assume that there are 10 quanta available in a nerve terminal, and for a given release event each is released with a probability of 0.2. For one such event, what is the probability that 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10 quanta will be released?
+
+%Setting our probability of release from each quanta
+p=0.2;
+
+%Setting the number of quanta that are available for release
+n=10;
+
+%Creating the array that will store our generated probabilities
+Quantalreleaseprob = zeros(1,n+1);
+
+%Once the probability array is created, we can now solve for probabilities
+%associated with each outcome k (from 0 quanta being released to all 10
+%quanta being released
+
+%Setting our range of outcomes - the "for" command here is very important as
+%it tells the code to iterate over every possible outcome k - it is also
+%important to always "end" the loop as well
+for k= 0:n
+%Code to solve for each outcome probability in a binomial distribution
+Quantalreleaseprob(k+1) = binopdf(k,n,p);
+end
+
+%Now we just want to display the probabilities for each possible outcome
+fprintf('Prob of releasing k quante:\n');
+for k= 0:n
+fprintf('%d quanta: %.4f\n', k, Quantalreleaseprob(k+1));
+end
+
+
+%Question 1 Answers
+
+%0 quanta: 0.1074
+%1 quanta: 0.2684
+%2 quanta: 0.3020
+%3 quanta: 0.2013
+%4 quanta: 0.0881
+%5 quanta: 0.0264
+%6 quanta: 0.0055
+%7 quanta: 0.0008
+%8 quanta: 0.0001
+%9 quanta: 0.0000
+%10 quanta: 0.0000
+
+
+
+
+
+%Question 2
+%What about for each decile of release probability (0.1, 0.2, ... 1.0)? Which value of release probability did you determine to be the most probable, given your measurement?
+
+%Setting a range of release probabilities so that we can see how the
+%release probability affects the likelihood of releasing 8 quanta
+values_of_p=0.1:0.1:1.0
+%Setting the number of quanta that are available for release
+n_2=14;
+
+%Setting our quantal release outcome to 8 as that is the only one we want the probability
+%for
+k_2=8;
+
+%Creating the array that will store our generated probabilities for the
+%specified range
+Quantalreleaseprob_8 = zeros(1,length(values_of_p));
+
+%Solving for the probability of 8 quanta being released
+for i = 1:length(values_of_p)
+    p = values_of_p(i);
+    Quantalreleaseprob_8(i) = binopdf(k_2, n_2, p);
+end
+
+%Displaying the probabilities to 4 decimal places using a for loop once
+%more
+fprintf('Probability of releasing exactly %d of %d quanta for each decile of release probability:\n', k_2, n_2);
+for i = 1:length(values_of_p)
+    fprintf('p = %.1f: %.4f\n', values_of_p(i), Quantalreleaseprob_8(i));
+end
+
+
+%Question 2 Answers
+
+%Probability of releasing exactly 8 quanta for each probability decile
+%p = 0.1: 0.0000
+%p = 0.2: 0.0020
+%p = 0.3: 0.0232
+%p = 0.4: 0.0918
+%p = 0.5: 0.1833
+%p = 0.6: 0.2066
+%p = 0.7: 0.1262
+%p = 0.8: 0.0322
+%p = 0.9: 0.0013
+%p = 1.0: 0.0000
+
+%Therefore, the release probability that was the most probable was 0.6!
+
+
+
+
+
+
+%Question 3 first part
+
+%Setting the release probability to 0.1
+p_3=0.1
+%Setting the number of quanta that are available for release
+n_3=14
+%Setting our quantal release outcomes
+k_3 = 8
+k_4 = 5
+%Determining the likelihoods depending on each quantal release outcome
+likelihood_8 = binopdf(k_3, n_3, p_3)
+likelihood_5=binopdf(k_4, n_3,p_3)
+%Calculating the total likelihood by multiplying the two probabilities
+%together given that they are considered to be independent of one another
+totallikelihood=likelihood_8*likelihood_5
+%Calculating the log of each likelihood and getting the sum is another way
+%to take into account both measurements
+log_likelihood_8=log10(likelihood_8)
+log_likelihood_5=log10(likelihood_5)
+%Computing the sum of the logs of these likelihood values to get the total
+%log likelihood
+total_log_likelihood=log_likelihood_5+log_likelihood_8
+
+
+%Answers to first part of Question 3
+
+%Total likelihood of 8 quanta being released and then 5 quanta being
+%released in the second trial with a release probability of 0.1 ->  1.2378e-07
+
+%Total log (used log base 10 not a natural log) likelihood with a release
+%probability of 0.1 -> -6.9073
+
+
+%Second part of question 3
+
+%Setting a range of release probabilities
+pvalue_deciles=0.1:0.1:1.0
+%Setting the number of quanta that are available for release
+n_4=14
+%Setting our quantal release outcomes
+k_5 = 8
+k_6 = 5
+
+%Creating array that each will store our generated probabilities for the
+%specified range
+Likelihooddecile = zeros(1, length(pvalue_deciles))
+
+%Solving for the probability of 8 quanta being released
+for i = 1:length(pvalue_deciles)
+    p = pvalue_deciles(i);
+    likelihood_8_2 = binopdf(k_5, n_4, p)
+    likelihood_5_2 = binopdf(k_6,n_4,p)
+    totallikelihood_2=likelihood_8_2*likelihood_5_2
+    Likelihooddecile(i)=totallikelihood_2
+    log_Likelihooddecile(i) = log(likelihood_8_2)+log(likelihood_5_2)
+end
+
+%Identifying the maximum value
+[max_likelihood_decile, max_idx_decile] = max(Likelihooddecile);
+max_p_decile = pvalue_deciles(max_idx_decile);
+
+% Display maximum likelihood estimates
+fprintf('Max likelihood at decile resolution is %e at p = %.2f\n', max_likelihood_decile, max_p_decile);
+
+
+%Moving to a higher resolution
+pvalue_deciles_highres=0.1:0.01:1.0
+
+%Creating array that each will store our generated probabilities for the
+%specified range at a higher resolution
+Likelihooddecile_highres = zeros(1, length(pvalue_deciles_highres))
+
+%Solving for the probability of 8 quanta being released
+for i = 1:length(pvalue_deciles_highres)
+    p = pvalue_deciles_highres(i);
+    likelihood_8_2 = binopdf(k_5, n_4, p)
+    likelihood_5_2 = binopdf(k_6,n_4,p)
+    totallikelihood_2=likelihood_8_2*likelihood_5_2
+    Likelihooddecile_highres(i)=totallikelihood_2
+    log_Likelihooddecile_highres(i) = log(likelihood_8_2)+log(likelihood_5_2)
+end
+
+%Identifying the maximum value of the high res dataset
+[max_likelihood_decile_highres, max_idx_decile_highres] = max(Likelihooddecile_highres);
+max_p_decile_highres = pvalue_deciles_highres(max_idx_decile_highres);
+
+% Display maximum likelihood estimates of the high res data set
+fprintf('Max likelihood at decile resolution is %e at p = %.2f\n', max_likelihood_decile_highres, max_p_decile_highres);
+
+
+%Playing around with increased sample size
+
+%Setting a range of release probabilities
+pvalue_deciles=0.1:0.1:1.0
+%Setting the number of quanta that are available for release
+n_9 = 25
+%Setting our quantal release outcomes
+k_5 = 8
+k_6 = 5
+k_7 = 2
+k_8 = 4
+
+%Creating array that each will store our generated probabilities for the
+%specified range
+Likelihooddecile_2 = zeros(1, length(pvalue_deciles))
+
+%Solving for the probability of 8 quanta being released
+for i = 1:length(pvalue_deciles)
+    p = pvalue_deciles(i);
+    likelihood_8_2 = binopdf(k_5, n_4, p)
+    likelihood_5_2 = binopdf(k_6,n_4,p)
+    likelihood_2 = binopdf(k_7,n_4,p)
+    likelihood_4 = binopdf(k_8,n_4,p)
+    totallikelihood_3=likelihood_8_2*likelihood_5_2*likelihood_2*likelihood_4
+    Likelihooddecile_2(i)=totallikelihood_3
+    log_Likelihooddecile_2(i) = log(likelihood_8_2)+log(likelihood_5_2)+log(likelihood_2)+log(likelihood_4)
+end
+
+%Identifying the maximum value
+[max_likelihood_decile_moresamp, max_idx_decile_moresamp] = max(Likelihooddecile_2);
+max_p_decile_moresamp = pvalue_deciles(max_idx_decile_moresamp);
+
+% Display maximum likelihood estimates
+fprintf('Max likelihood at decile resolution is %e at p = %.2f\n', max_likelihood_decile_moresamp, max_p_decile_moresamp);
+
+
+%Answers to second part of question 3
+
+%What is the maximum value? 
+%The maximum likelihood value is 2.239647e-02 at p = 0.50
+
+% Can you improve your estimate by computing the functions at a higher resolution?
+%By changing the probability range from 0.1 increments to 0.01 increments I
+%was able to get a higher maximum likelihood of 2.403132e-02 at p = 0.46
+
+% How does the estimate improve as you increase the sample size?
+%Increasing the sample size to 4 rather than 2 seemed to decrease the
+%maximum probability - maybe I have my code wrong in the sense of not
+%seeing an improvement but running the code with 4 samples I get the
+%following -> Max likelihood is 1.181480e-04 at p = 0.3
+
+
+
+
+
+
+%Question 4
+%Total quanta
+n_8 = 14;
+%Number of trials
+num_runs = 100;
+
+% Listing all 100 samples that were generated
+samples_100trials = ([2,2,2,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,9,9,9,9,9,10,10,10,10,10]);
+
+% Deciles of release probability
+p_values_100 = 0:0.1:1;
+
+% Initialize array to store log-likelihoods
+likelihood_100samples = zeros(1, length(p_values_100));
+
+% Calculate log-likelihood for 100 samples
+for i = 1:length(p_values_100)
+    p = p_values_100(i);
+    likelihood_100samples(i) = sum(samples_100trials, n_8, p);
+end
+
+% Find maximum log-likelihood and corresponding p-value for 100 samples
+[max_likelihood_100samples, idx_100samples] = max(likelihood_100samples);
+max_p_100samples = p_values_100(idx_100samples);
+
+% Display results
+fprintf('Max likelihood for 100 samples is %f at p-hat = %f\n', max_likelihood_100samples, max_p_100samples);
+
+
+%Answers to Question 4
+%I struggled with this question and tried to use the above code but was
+%having a lot of trouble with the sum function - Matlab is saying that it
+%is invalid.
+
+
+
+
+
+%Question 5
+%Now we are measuring 7 quantal events after changing the temperature
+
+%Setting a range of release probabilities so that we can see how the
+%release probability affects the likelihood of releasing 7 quanta
+p_7=0.3
+%Setting the number of quanta that are available for release
+n=14;
+
+%Setting our quantal release outcome to 8 as that is the only one we want the probability
+%for
+k_9=7;
+
+%Creating the array that will store our generated probabilities for the
+%specified range
+Quantalreleaseprob_7 = zeros(1,length(p_7));
+
+%Solving for the probability of 8 quanta being released
+for i = 1:length(p_7)
+    p = p_7(i);
+    Quantalreleaseprob_7(i) = binopdf(k_9, n, p);
+end
+
+%Displaying the probabilities to 4 decimal places using a for loop once
+%more
+fprintf('Probability of releasing exactly %d of %d quanta for each decile of release probability:\n', k_9, n);
+for i = 1:length(p_7)
+    fprintf('p = %.1f: %.4f\n', p_7(i), Quantalreleaseprob_7(i));
+end
+
+%Identifying the maximum value
+[max_likelihood_decile_7, max_idx_decile_7] = max(Quantalreleaseprob_7);
+max_p_decile_7 = p_7(max_idx_decile_7);
+
+% Display maximum likelihood estimates
+fprintf('Max likelihood %e at p = %.2f\n', max_likelihood_decile_7, max_p_decile_7);
+
+
+%Question 5 Answers
+
+%If temperature gives 7 quanta rather than 8, the max likelihood is
+%6.181336e-02 or 0.0618
+
+%In reference to the null hypothesis we can set a threshold of 0.05 for
+%example to see where the calculated probability falls in reference to it -
+%in this case, the probability that we would of gotten that measurement
+%given that the null hypothesis was true would be over 0.05. Therefore,
+%given that the calculated probability is 0.0618, we can say that the null
+%hypothesis is true (or that we don't have enough evidence to reject the
+%null hypothesis), meaning that temperature would not of had an effect.
+
+
+
+
+
+
