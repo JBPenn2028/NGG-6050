@@ -1,0 +1,279 @@
+%First part of exercise
+
+
+%This code signifies the number of t-tests that we will be running
+num_tests = 1000;
+
+%This code signifies the number of samples that will be present in each
+%group
+n_samples = 100;
+
+%This code allows us to specify the two important parameters of our
+%normally distrubted samples
+mean_value = 0;
+std_deviation = 1;
+
+%This code provides an array to store our calculated p-values
+p_values = zeros(num_tests, 1);
+
+%This code allows us to run the t-tests
+for i = 1:num_tests
+    %This code will allow us to generate random samples from a normal distribution
+    sample1 = mean_value + std_deviation * randn(n_samples, 1);
+    sample2 = mean_value + std_deviation * randn(n_samples, 1);
+    
+    %This is the code that will allow us to perform our t-tests
+    [~, p] = ttest2(sample1, sample2);
+    
+    %Save the p-value
+    p_values(i) = p;
+end
+
+% Find the number of p-values less than 0.05 (should be around 5% of the
+% total samples that were run)
+num_below_threshold = sum(p_values < 0.05);
+
+%After running this code I was able to show that in my exercise 54 of the
+%1000 t-tests that were run showcased a p-value less than 0.05. This makes
+%sense as 54/1000 is around 5%!
+
+%As a result of this code I have stored all 1000 p-values in the p_values
+%array
+
+
+
+
+
+%Second part of exercise
+
+%Applying Bonferroni correction
+
+% This code will allow me to correct the alpha level based on the number of
+% comparisons that were done (1000 in this case)
+alpha_original = 0.05;
+alpha_bonferroni = alpha_original / num_tests;
+
+% Find which tests are significant after Bonferroni correction
+significant_indices = find(p_values < alpha_bonferroni);
+
+% Display number of significant tests after Bonferroni correction
+num_significant = length(significant_indices);
+disp(['Number of significant tests after Bonferroni correction: ', num2str(num_significant)]);
+
+%After this Bonferroni correction, none of the t-tests I ran produced zero
+%significant p-values - huge reduction in Type 1 errors!
+
+%Applying Benjamini–Hochberg procedure
+
+% This code allows us to specify our desired false discovery rate
+Q = 0.05;
+
+% This code allows us to rank p-values in ascending order
+[sorted_p, order] = sort(p_values);
+
+% This code allows us to find k which in this case represents the largest rank for which p(k) <= (k/m) * Q
+%m in this case is the total number of tests that were run (1000)
+k = find(sorted_p <= (1:num_tests)' / num_tests * Q, 1, 'last');
+
+if isempty(k)
+    disp('No tests are significant under the Benjamini-Hochberg procedure.');
+else
+    % Indices of the original p-values that are significant under BH procedure
+    significant_indices_BH = order(1:k);
+    
+    % Display results
+    disp(['Number of significant tests after BH procedure: ', num2str(k)]);
+    disp(['Indices of significant tests: ', num2str(significant_indices_BH')]);
+end
+
+%After running this code, no tests were deemed to be significant under the
+%Benjamini-Hochberg procedure!!
+
+
+
+
+
+%Last part of the exercise
+
+%Setting the sample 1 and sample 2 means to be 1 and 2 respectively
+
+%This code signifies the number of t-tests that we will be running
+num_tests = 1000;
+
+%This code signifies the number of samples that will be present in each
+%group
+n_samples = 100;
+
+%This code allows us to specify the two important parameters of our
+%normally distrubted samples
+mean_value_sample1 = 1;
+std_deviation = 1;
+mean_value_sample2 = 2
+
+%This code provides an array to store our calculated p-values
+p_values_run2 = zeros(num_tests, 1);
+
+%This code allows us to run the t-tests
+for i = 1:num_tests
+    %This code will allow us to generate random samples from a normal distribution
+    sample1_run2 = mean_value_sample1 + std_deviation * randn(n_samples, 1);
+    sample2_run2 = mean_value_sample2 + std_deviation * randn(n_samples, 1);
+    
+    %This is the code that will allow us to perform our t-tests
+    [~, p] = ttest2(sample1_run2, sample2_run2);
+    
+    %Save the p-value
+    p_values_run2(i) = p;
+end
+
+% Find the number of p-values less than 0.05 (should be around 5% of the
+% total samples that were run)
+num_below_threshold_run2 = sum(p_values_run2 < 0.05);
+
+%With the means specified as different, all 1000 samples are shown to be
+%significant
+
+
+%Applying Bonferroni correction
+
+% This code will allow me to correct the alpha level based on the number of
+% comparisons that were done (1000 in this case)
+alpha_original_run2 = 0.05;
+alpha_bonferroni_run2 = alpha_original_run2 / num_tests;
+
+% Find which tests are significant after Bonferroni correction
+significant_indices_run2 = find(p_values_run2 < alpha_bonferroni_run2);
+
+% Display number of significant tests after Bonferroni correction
+num_significant_run2 = length(significant_indices_run2);
+disp(['Number of significant tests after Bonferroni correction: ', num2str(num_significant_run2)]);
+
+%After this Bonferroni correction, 998 of the t-tests I ran were
+%significant - therefore, using this correction I was able to remove two
+%falsely significant t-tests!
+
+
+%Applying Benjamini–Hochberg procedure
+
+% This code allows us to specify our desired false discovery rate
+Q_run2 = 0.05;
+
+% This code allows us to rank p-values in ascending order
+[sorted_p_run2, order] = sort(p_values_run2);
+
+% This code allows us to find k which in this case represents the largest rank for which p(k) <= (k/m) * Q
+%m in this case is the total number of tests that were run (1000)
+k_run2 = find(sorted_p_run2 <= (1:num_tests)' / num_tests * Q_run2, 1, 'last');
+
+if isempty(k_run2)
+    disp('No tests are significant under the Benjamini-Hochberg procedure.');
+else
+    % Indices of the original p-values that are significant under BH procedure
+    significant_indices_BH2 = order(1:k_run2);
+    
+    % Display results
+    disp(['Number of significant tests after BH procedure: ', num2str(k_run2)]);
+    disp(['Indices of significant tests: ', num2str(significant_indices_BH2')]);
+end
+
+%After running this code, all 1000 tests were deemed to be significant
+
+
+
+
+
+%Setting the sample 1 and sample 2 means to be 2 and 10 respectively
+
+%This code signifies the number of t-tests that we will be running
+num_tests = 1000;
+
+%This code signifies the number of samples that will be present in each
+%group
+n_samples = 100;
+
+%This code allows us to specify the two important parameters of our
+%normally distrubted samples
+mean_value_sample1_run3 = 2;
+std_deviation = 1;
+mean_value_sample2_run3 = 10
+
+%This code provides an array to store our calculated p-values
+p_values_run3 = zeros(num_tests, 1);
+
+%This code allows us to run the t-tests
+for i = 1:num_tests
+    %This code will allow us to generate random samples from a normal distribution
+    sample1_run3 = mean_value_sample1_run3 + std_deviation * randn(n_samples, 1);
+    sample2_run3 = mean_value_sample2_run3 + std_deviation * randn(n_samples, 1);
+    
+    %This is the code that will allow us to perform our t-tests
+    [~, p] = ttest2(sample1_run3, sample2_run3);
+    
+    %Save the p-value
+    p_values_run3(i) = p;
+end
+
+% Find the number of p-values less than 0.05 (should be around 5% of the
+% total samples that were run)
+num_below_threshold_run3 = sum(p_values_run3 < 0.05);
+
+%In this case all 1000 t-tests produced a p-value that was below the 0.05
+%threshold
+
+
+%Applying Bonferroni correction
+
+% This code will allow me to correct the alpha level based on the number of
+% comparisons that were done (1000 in this case)
+alpha_original_run3 = 0.05;
+alpha_bonferroni_run3 = alpha_original_run3 / num_tests;
+
+% Find which tests are significant after Bonferroni correction
+significant_indices_run3 = find(p_values_run3 < alpha_bonferroni_run3);
+
+% Display number of significant tests after Bonferroni correction
+num_significant_run3 = length(significant_indices_run3);
+disp(['Number of significant tests after Bonferroni correction: ', num2str(num_significant_run3)]);
+
+%After this Bonferroni correction, 1000 of the t-tests I ran produced a
+%p-value that was significant
+
+
+%Applying Benjamini–Hochberg procedure
+
+% This code allows us to specify our desired false discovery rate
+Q_run3 = 0.05;
+
+% This code allows us to rank p-values in ascending order
+[sorted_p_run3, order] = sort(p_values_run3);
+
+% This code allows us to find k which in this case represents the largest rank for which p(k) <= (k/m) * Q
+%m in this case is the total number of tests that were run (1000)
+k_run3 = find(sorted_p_run3 <= (1:num_tests)' / num_tests * Q_run3, 1, 'last');
+
+if isempty(k_run3)
+    disp('No tests are significant under the Benjamini-Hochberg procedure.');
+else
+    % Indices of the original p-values that are significant under BH procedure
+    significant_indices_BH3 = order(1:k_run3);
+    
+    % Display results
+    disp(['Number of significant tests after BH procedure: ', num2str(k_run3)]);
+    disp(['Indices of significant tests: ', num2str(significant_indices_BH3')]);
+end
+
+%After this Bonferroni correction, 1000 of the t-tests I ran produced a
+%p-value that was significant
+
+%Overall I really did not notice a big difference between the two
+%additional runs I did with different means aside from the Bonferroni
+%correction eliminating 2 p-values when the means were 1 and 2. Therefore,
+%based off of that I would assume that the larger the difference between
+%the means, the less likely p-values will be removed after these
+%corrections given that there is a much higher chance that the two random
+%samples will be different if the means are farther apart.
+
+
+
+
+
